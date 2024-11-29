@@ -5,10 +5,6 @@ allprojects {
     }
 }
 
-buildscript {
-    extra["kotlin_version"] = "1.9.0"
-}
-
 rootProject.buildDir = File("../build")
 
 subprojects {

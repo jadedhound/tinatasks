@@ -13,6 +13,20 @@ import 'package:tinatasks/global.dart';
 
 import '../main.dart';
 
+class IgnoreCertHttpOverrides extends HttpOverrides {
+  bool ignoreCerts = false;
+
+  IgnoreCertHttpOverrides(bool _ignore) {
+    ignoreCerts = _ignore;
+  }
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (_, __, ___) => ignoreCerts;
+  }
+}
+
 class Client {
   GlobalKey<ScaffoldMessengerState>? global_scaffold_key;
   final JsonDecoder _decoder = new JsonDecoder();
