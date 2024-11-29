@@ -1,7 +1,50 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:tinatasks/service/services.dart';
 import 'package:tinatasks/theme/constants.dart';
+
+class ThemeModel with ChangeNotifier {
+  FlutterThemeMode _themeMode = FlutterThemeMode.dark;
+  FlutterThemeMode get themeMode => _themeMode;
+
+  void set themeMode(FlutterThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners();
+  }
+
+  void notify() {
+    notifyListeners();
+  }
+
+  ThemeData get themeData {
+    switch (_themeMode) {
+      case FlutterThemeMode.dark:
+        return buildVikunjaDarkTheme();
+      case FlutterThemeMode.materialYouLight:
+        return buildVikunjaMaterialLightTheme();
+      case FlutterThemeMode.materialYouDark:
+        return buildVikunjaMaterialDarkTheme();
+      default:
+        return buildVikunjaTheme();
+    }
+  }
+
+  ThemeData getWithColorScheme(
+      ColorScheme? lightTheme, ColorScheme? darkTheme) {
+    switch (_themeMode) {
+      case FlutterThemeMode.dark:
+        return buildVikunjaDarkTheme().copyWith(colorScheme: darkTheme);
+      case FlutterThemeMode.materialYouLight:
+        return buildVikunjaMaterialLightTheme()
+            .copyWith(colorScheme: lightTheme);
+      case FlutterThemeMode.materialYouDark:
+        return buildVikunjaMaterialDarkTheme().copyWith(colorScheme: darkTheme);
+      default:
+        return buildVikunjaTheme().copyWith(colorScheme: lightTheme);
+    }
+  }
+}
 
 ThemeData buildVikunjaTheme() => _buildVikunjaTheme(ThemeData.light());
 ThemeData buildVikunjaDarkTheme() =>

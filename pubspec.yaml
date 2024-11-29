@@ -23,7 +23,6 @@ dependencies:
   build: ^2.4.1
   json_serializable: ^6.7.1
   petitparser: ^6.0.2
-  provider: ^6.1.2
   flutter_colorpicker: ^1.1.0
   flutter_keyboard_visibility: ^6.0.0
   dotted_border: ^2.1.0
@@ -43,8 +42,7 @@ dependencies:
   html_editor_enhanced: ^2.6.0
   # Code Helpers
   fpdart: ^1.1.1
-  # Monitoring
-  sentry_flutter: ^8.10.1
+  provider: ^6.1.2
   # Theme and Style
   flutter_svg: ^2.0.16
 

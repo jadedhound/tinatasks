@@ -1,10 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tinatasks/global.dart';
 import 'package:tinatasks/pages/home.dart';
 import 'package:tinatasks/pages/user/login.dart';
@@ -24,63 +22,21 @@ void main() async {
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
 
   runApp(
-    ChangeNotifierProvider<ProjectProvider>(
-      create: (_) => ProjectProvider(),
-      child: VikunjaGlobal(
+    VikunjaGlobal(
+      child: ChangeNotifierProvider<ProjectProvider>(
+        create: (_) => ProjectProvider(),
         child: VikunjaApp(
           home: HomePage(),
           key: UniqueKey(),
           navKey: globalNavigatorKey,
         ),
-        login: VikunjaApp(
-          home: LoginPage(),
-          key: UniqueKey(),
-        ),
+      ),
+      login: VikunjaApp(
+        home: LoginPage(),
+        key: UniqueKey(),
       ),
     ),
   );
-}
-
-class ThemeModel with ChangeNotifier {
-  FlutterThemeMode _themeMode = FlutterThemeMode.dark;
-  FlutterThemeMode get themeMode => _themeMode;
-
-  void set themeMode(FlutterThemeMode mode) {
-    _themeMode = mode;
-    notifyListeners();
-  }
-
-  void notify() {
-    notifyListeners();
-  }
-
-  ThemeData get themeData {
-    switch (_themeMode) {
-      case FlutterThemeMode.dark:
-        return buildVikunjaDarkTheme();
-      case FlutterThemeMode.materialYouLight:
-        return buildVikunjaMaterialLightTheme();
-      case FlutterThemeMode.materialYouDark:
-        return buildVikunjaMaterialDarkTheme();
-      default:
-        return buildVikunjaTheme();
-    }
-  }
-
-  ThemeData getWithColorScheme(
-      ColorScheme? lightTheme, ColorScheme? darkTheme) {
-    switch (_themeMode) {
-      case FlutterThemeMode.dark:
-        return buildVikunjaDarkTheme().copyWith(colorScheme: darkTheme);
-      case FlutterThemeMode.materialYouLight:
-        return buildVikunjaMaterialLightTheme()
-            .copyWith(colorScheme: lightTheme);
-      case FlutterThemeMode.materialYouDark:
-        return buildVikunjaMaterialDarkTheme().copyWith(colorScheme: darkTheme);
-      default:
-        return buildVikunjaTheme().copyWith(colorScheme: lightTheme);
-    }
-  }
 }
 
 ThemeModel themeModel = ThemeModel();
@@ -88,17 +44,15 @@ ThemeModel themeModel = ThemeModel();
 class VikunjaApp extends StatelessWidget {
   final Widget home;
   final GlobalKey<NavigatorState>? navKey;
-  bool sentryEnabled = false;
 
   VikunjaApp({Key? key, required this.home, this.navKey}) : super(key: key);
 
   Future<void> getLaunchData() async {
     try {
-      SettingsManager manager = SettingsManager(new FlutterSecureStorage());
+      SettingsManager manager = SettingsManager(FlutterSecureStorage());
       await manager.getThemeMode().then((themeMode) {
         themeModel.themeMode = themeMode;
       });
-      sentryEnabled = await manager.getSentryEnabled();
     } catch (e) {
       print("Failed to get theme mode: $e");
       return Future.value(false);
@@ -117,38 +71,8 @@ class VikunjaApp extends StatelessWidget {
                 if (data.hasData) {
                   return new DynamicColorBuilder(
                       builder: (lightTheme, darkTheme) {
-                    if (sentryEnabled) {
-                      print("sentry enabled");
-                      SentryFlutter.init((options) {
-                        options.dsn =
-                            'https://a09618e3bb30e03b93233c21973df869@o1047380.ingest.us.sentry.io/4507995557134336';
-                        options.tracesSampleRate = 1.0;
-                        options.profilesSampleRate = 1.0;
-                      }).then((_) {
-                        FlutterError.onError = (details) async {
-                          print("sending to sentry");
-                          await Sentry.captureException(
-                            details.exception,
-                            stackTrace: details.stack,
-                          );
-                          FlutterError.presentError(details);
-                        };
-                        PlatformDispatcher.instance.onError = (error, stack) {
-                          print("sending to sentry (platform)");
-                          Sentry.captureException(error, stackTrace: stack);
-                          FlutterError.presentError(FlutterErrorDetails(
-                              exception: error, stack: stack));
-                          return false;
-                        };
-                      });
-
-                      return SentryWidget(
-                          child: buildMaterialApp(themeModel.getWithColorScheme(
-                              lightTheme, darkTheme)));
-                    } else {
-                      return buildMaterialApp(
-                          themeModel.getWithColorScheme(lightTheme, darkTheme));
-                    }
+                    return buildMaterialApp(
+                        themeModel.getWithColorScheme(lightTheme, darkTheme));
                   });
                 } else {
                   return Center(child: CircularProgressIndicator());
@@ -159,11 +83,10 @@ class VikunjaApp extends StatelessWidget {
 
   Widget buildMaterialApp(ThemeData? themeData) {
     return MaterialApp(
-      title: 'Vikunja',
+      title: 'TinaTasks',
       theme: themeData,
       scaffoldMessengerKey: globalSnackbarKey,
       navigatorKey: navKey,
-      // <= this
       home: this.home,
     );
   }
