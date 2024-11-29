@@ -41,6 +41,8 @@ build/
 **/android/**/GeneratedPluginRegistrant.java
 # Hide PNGs
 **/android/**/res/**/*.png
+# Hide Secrets
+**/android/**/keystore.jks
 
 # iOS/XCode related
 **/ios/**/*.mode1v3

@@ -44,17 +44,16 @@ android {
 
     signingConfigs {
         create("release") {
-            storePassword = keystoreProperties["storePassword"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            keyAlias = keystoreProperties["keyAlias"] as String?
-            storeFile = keystoreProperties["storeFile"]?.let { file(it as String) }
-        }
-    }
+            // ENV variables used by Github Actions to build the project.
+            val envStorePassword = System.getenv("ANDROID_STORE_PASSWORD")
+            val envKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            val envKeyAlias: String? = System.getenv("KEY_ALIAS")
 
-    flavorDimensions += "version"
-    productFlavors {
-        create("github") {
-            signingConfig = signingConfigs.getByName("release")
+            // Use a key.properties local file for development.
+            storePassword = envStorePassword ?: keystoreProperties["storePassword"] as String?
+            keyPassword = envKeyPassword ?: keystoreProperties["keyPassword"] as String?
+            keyAlias = envKeyAlias ?: keystoreProperties["keyAlias"] as String?
+            storeFile = file("../keystore.jks")
         }
     }
 
@@ -65,6 +64,7 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

@@ -1,0 +1,65 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Test, build and release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Write Keystore Secret to File
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        working-directory: ./mobile
+        run: echo $KEYSTORE | base64 -d > android/keystore.jks
+
+      - name: Download Packages
+        run: flutter pub get
+
+      - name: Generate Icons
+        run: dart run flutter_launcher_icons
+
+      - name: Run Dart Analyzer
+        run: flutter analyze
+
+      - name: Build Android APK
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: |
+          flutter build apk --release
+          flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64
+
+      - name: Publish Android Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-signed
+          path: build/app/outputs/flutter-apk/*.apk
