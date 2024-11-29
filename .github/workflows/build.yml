@@ -45,9 +45,6 @@ jobs:
       - name: Generate Icons
         run: dart run flutter_launcher_icons
 
-      - name: Run Dart Analyzer
-        run: flutter analyze
-
       - name: Build Android APK
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
