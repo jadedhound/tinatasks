@@ -37,7 +37,6 @@ jobs:
       - name: Write Keystore Secret to File
         env:
           KEYSTORE: ${{ secrets.KEYSTORE }}
-        working-directory: ./mobile
         run: echo $KEYSTORE | base64 -d > android/keystore.jks
 
       - name: Download Packages
