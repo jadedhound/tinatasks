@@ -270,7 +270,7 @@ class _ListPageState extends State<ListPage> {
   }
 
   Future<void> updateDisplayDoneTasks() {
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .projectService
         .getDisplayDoneTasks(_project.id)
         .then((value) {
@@ -341,7 +341,7 @@ class _ListPageState extends State<ListPage> {
 
   Future<void> _addItem(String title, BuildContext context,
       [Bucket? bucket]) async {
-    final currentUser = VikunjaGlobal.of(context).currentUser;
+    final currentUser = VikunjaGlobalWidget.of(context).currentUser;
     if (currentUser == null) {
       return;
     }

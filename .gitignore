@@ -30,6 +30,7 @@
 build/
 !pubspec.lock
 .flutter-plugins-dependencies
+*.g.dart
 
 # Android related
 **/android/**/gradle-wrapper.jar

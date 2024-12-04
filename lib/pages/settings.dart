@@ -28,51 +28,60 @@ class SettingsPageState extends State<SettingsPage> {
   void init() {
     durationTextController = TextEditingController();
 
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .projectService
         .getAll()
         .then((value) => setState(() => projectList = value));
 
-    VikunjaGlobal.of(context).settingsManager.getIgnoreCertificates().then(
-        (value) =>
+    VikunjaGlobalWidget.of(context)
+        .settingsManager
+        .getIgnoreCertificates()
+        .then((value) =>
             setState(() => ignoreCertificates = value == "1" ? true : false));
 
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .settingsManager
         .getSentryEnabled()
         .then((value) => setState(() => sentryEnabled = value));
 
-    VikunjaGlobal.of(context).settingsManager.getVersionNotifications().then(
-        (value) => setState(
+    VikunjaGlobalWidget.of(context)
+        .settingsManager
+        .getVersionNotifications()
+        .then((value) => setState(
             () => getVersionNotifications = value == "1" ? true : false));
 
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .versionChecker
         .getCurrentVersionTag()
         .then((value) => setState(() => versionTag = value));
 
-    VikunjaGlobal.of(context).settingsManager.getWorkmanagerDuration().then(
-        (value) => setState(
+    VikunjaGlobalWidget.of(context)
+        .settingsManager
+        .getWorkmanagerDuration()
+        .then((value) => setState(
             () => durationTextController.text = (value.inMinutes.toString())));
 
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .settingsManager
         .getThemeMode()
         .then((value) => setState(() => themeMode = value));
 
-    VikunjaGlobal.of(context).newUserService?.getCurrentUser().then((value) => {
-          setState(() {
-            currentUser = value!;
-            defaultProject = value.settings?.default_project_id;
-          }),
-        });
+    VikunjaGlobalWidget.of(context)
+        .newUserService
+        ?.getCurrentUser()
+        .then((value) => {
+              setState(() {
+                currentUser = value!;
+                defaultProject = value.settings?.defaultProjectId;
+              }),
+            });
 
     initialized = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    final global = VikunjaGlobal.of(context);
+    final global = VikunjaGlobalWidget.of(context);
     if (!initialized) init();
     return new Scaffold(
       appBar: AppBar(
@@ -152,7 +161,9 @@ class SettingsPageState extends State<SettingsPage> {
               ],
               value: themeMode,
               onChanged: (FlutterThemeMode? value) {
-                VikunjaGlobal.of(context).settingsManager.setThemeMode(value!);
+                VikunjaGlobalWidget.of(context)
+                    .settingsManager
+                    .setThemeMode(value!);
                 setState(() => themeMode = value);
                 if (themeMode != null) themeModel.themeMode = themeMode!;
               },
@@ -165,7 +176,9 @@ class SettingsPageState extends State<SettingsPage> {
                   value: ignoreCertificates,
                   onChanged: (value) {
                     setState(() => ignoreCertificates = value);
-                    VikunjaGlobal.of(context).client.reloadIgnoreCerts(value);
+                    VikunjaGlobalWidget.of(context)
+                        .client
+                        .reloadIgnoreCerts(value);
                   })
               : ListTile(title: Text("...")),
           Divider(),
@@ -178,7 +191,7 @@ class SettingsPageState extends State<SettingsPage> {
                   onChanged: (value) {
                     if (value == null) return;
                     setState(() => sentryEnabled = value);
-                    VikunjaGlobal.of(context)
+                    VikunjaGlobalWidget.of(context)
                         .settingsManager
                         .setSentryEnabled(value)
                         .then((_) => themeModel.notify());
@@ -197,11 +210,11 @@ class SettingsPageState extends State<SettingsPage> {
                   ),
                 )),
                 TextButton(
-                    onPressed: () => VikunjaGlobal.of(context)
+                    onPressed: () => VikunjaGlobalWidget.of(context)
                         .settingsManager
                         .setWorkmanagerDuration(Duration(
                             minutes: int.parse(durationTextController.text)))
-                        .then((value) => VikunjaGlobal.of(context)
+                        .then((value) => VikunjaGlobalWidget.of(context)
                             .updateWorkmanagerDuration()),
                     child: Text("Save")),
               ])),
@@ -213,7 +226,7 @@ class SettingsPageState extends State<SettingsPage> {
                   onChanged: (value) {
                     setState(() => getVersionNotifications = value);
                     if (value != null)
-                      VikunjaGlobal.of(context)
+                      VikunjaGlobalWidget.of(context)
                           .settingsManager
                           .setVersionNotifications(value);
                   })
@@ -225,11 +238,13 @@ class SettingsPageState extends State<SettingsPage> {
                     Permission.notification.request();
                   }
                 });
-                VikunjaGlobal.of(context).notifications.sendTestNotification();
+                VikunjaGlobalWidget.of(context)
+                    .notifications
+                    .sendTestNotification();
               },
               child: Text("Send test notification")),
           TextButton(
-              onPressed: () => VikunjaGlobal.of(context)
+              onPressed: () => VikunjaGlobalWidget.of(context)
                   .versionChecker
                   .getLatestVersionTag()
                   .then((value) => setState(() => newestVersionTag = value)),
@@ -240,7 +255,8 @@ class SettingsPageState extends State<SettingsPage> {
               : ""),
           Divider(),
           TextButton(
-              onPressed: () => VikunjaGlobal.of(context).logoutUser(context),
+              onPressed: () =>
+                  VikunjaGlobalWidget.of(context).logoutUser(context),
               child: Text("Logout")),
         ],
       ),

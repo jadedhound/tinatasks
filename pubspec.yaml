@@ -21,7 +21,6 @@ dependencies:
   datetime_picker_formfield: ^2.0.1
   flutter_typeahead: ^5.2.0
   build: ^2.4.1
-  json_serializable: ^6.7.1
   petitparser: ^6.0.2
   flutter_colorpicker: ^1.1.0
   flutter_keyboard_visibility: ^6.0.0
@@ -52,6 +51,8 @@ dev_dependencies:
     version: any
   test: ^1.24.9
   flutter_launcher_icons: ^0.13.1
+  build_runner: ^2.4.13
+  json_serializable: ^6.9.0
 
 flutter_launcher_icons:
   android: true

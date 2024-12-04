@@ -2,7 +2,9 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:tinatasks/models/task.dart';
 import 'package:tinatasks/models/user.dart';
 
-@JsonSerializable()
+part 'bucket.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class Bucket {
   int id, limit;
   int? projectViewId;
@@ -26,32 +28,6 @@ class Bucket {
         this.updated = created ?? DateTime.now(),
         this.tasks = tasks ?? [];
 
-  Bucket.fromJSON(Map<String, dynamic> json)
-      : id = json['id'],
-        projectViewId = json['project_view_id'],
-        title = json['title'],
-        position = json['position'] is int
-            ? json['position'].toDouble()
-            : json['position'],
-        limit = json['limit'],
-        created = DateTime.parse(json['created']),
-        updated = DateTime.parse(json['updated']),
-        createdBy = User.fromJson(json['created_by']),
-        tasks = json['tasks'] == null
-            ? []
-            : (json['tasks'] as List<dynamic>)
-                .map((task) => Task.fromJson(task))
-                .toList();
-
-  toJSON() => {
-        'id': id,
-        'project_view_id': projectViewId,
-        'title': title,
-        'position': position,
-        'limit': limit,
-        'created': created.toUtc().toIso8601String(),
-        'updated': updated.toUtc().toIso8601String(),
-        'created_by': createdBy.toJSON(),
-        'tasks': tasks.map((task) => task.toJSON()).toList(),
-      };
+  factory Bucket.fromJson(Map<String, dynamic> json) => _$BucketFromJson(json);
+  Map<String, dynamic> toJson() => _$BucketToJson(this);
 }

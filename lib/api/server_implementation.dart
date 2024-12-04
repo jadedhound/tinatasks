@@ -5,7 +5,7 @@ import 'package:tinatasks/models/server.dart';
 import '../service/services.dart';
 
 class ServerAPIService extends APIService implements ServerService {
-  ServerAPIService(Client client) : super(client);
+  ServerAPIService(TinaClient client) : super(client);
 
   @override
   Future<Server?> getInfo() {

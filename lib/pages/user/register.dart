@@ -126,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
   _registerUser(BuildContext context) async {
     setState(() => _loading = true);
     try {
-      var vGlobal = VikunjaGlobal.of(context);
+      var vGlobal = VikunjaGlobalWidget.of(context);
       var newUserLoggedIn =
           await vGlobal.newUserService?.register(_username!, _email, _password);
       if (newUserLoggedIn != null)

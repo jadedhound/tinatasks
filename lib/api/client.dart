@@ -11,8 +11,6 @@ import 'package:tinatasks/api/response.dart';
 import 'package:tinatasks/components/string_extension.dart';
 import 'package:tinatasks/global.dart';
 
-import '../main.dart';
-
 class IgnoreCertHttpOverrides extends HttpOverrides {
   bool ignoreCerts = false;
 
@@ -27,8 +25,7 @@ class IgnoreCertHttpOverrides extends HttpOverrides {
   }
 }
 
-class Client {
-  GlobalKey<ScaffoldMessengerState>? global_scaffold_key;
+class TinaClient {
   final JsonDecoder _decoder = new JsonDecoder();
   final JsonEncoder _encoder = new JsonEncoder();
   String _token = '';
@@ -44,12 +41,11 @@ class Client {
 
   @override
   bool operator ==(Object otherClient) {
-    if (otherClient is! Client) return false;
+    if (otherClient is! TinaClient) return false;
     return otherClient._token == _token;
   }
 
-  Client(
-    this.global_scaffold_key, {
+  TinaClient({
     String? token,
     String? base,
     bool authenticated = false,
@@ -84,9 +80,7 @@ class Client {
   void reloadIgnoreCerts(bool? val) {
     ignoreCertificates = val ?? false;
     HttpOverrides.global = new IgnoreCertHttpOverrides(ignoreCertificates);
-    if (global_scaffold_key == null ||
-        global_scaffold_key!.currentContext == null) return;
-    VikunjaGlobal.of(global_scaffold_key!.currentContext!)
+    VikunjaGlobalWidget.of(globalSnackbarKey.currentContext!)
         .settingsManager
         .setIgnoreCertificates(ignoreCertificates);
   }
@@ -174,14 +168,13 @@ class Client {
   }
 
   Response? _handleError(Object? e, StackTrace? st) {
-    if (global_scaffold_key == null) return null;
     SnackBar snackBar = SnackBar(
       content: Text("Error on request: " + e.toString()),
       action: SnackBarAction(
           label: "Clear",
-          onPressed: () => global_scaffold_key!.currentState?.clearSnackBars()),
+          onPressed: () => globalSnackbarKey.currentState?.clearSnackBars()),
     );
-    global_scaffold_key!.currentState?.showSnackBar(snackBar);
+    globalSnackbarKey.currentState?.showSnackBar(snackBar);
     return null;
   }
 
@@ -200,7 +193,7 @@ class Client {
 
       if (response.statusCode == 401 &&
           globalNavigatorKey.currentContext != null) {
-        VikunjaGlobal.of(globalNavigatorKey.currentContext!)
+        VikunjaGlobalWidget.of(globalNavigatorKey.currentContext!)
             .logoutUser(globalNavigatorKey.currentContext!);
       }
 
@@ -230,10 +223,7 @@ class Client {
                 },
               ),
       );
-      if (global_scaffold_key != null && showSnackBar)
-        global_scaffold_key!.currentState?.showSnackBar(snackBar);
-      else
-        print("error on request: ${error["message"]}");
+      globalSnackbarKey.currentState?.showSnackBar(snackBar);
     }
     return null;
   }

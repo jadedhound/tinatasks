@@ -12,9 +12,6 @@ import 'package:tinatasks/stores/project_store.dart';
 import 'package:tinatasks/theme/theme.dart';
 import 'package:workmanager/workmanager.dart';
 
-final globalSnackbarKey = GlobalKey<ScaffoldMessengerState>();
-final globalNavigatorKey = GlobalKey<NavigatorState>();
-
 void main() async {
   // Required to start background services before the app is run by runApp.
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +19,7 @@ void main() async {
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
 
   runApp(
-    VikunjaGlobal(
+    VikunjaGlobalWidget(
       child: ChangeNotifierProvider<ProjectProvider>(
         create: (_) => ProjectProvider(),
         child: VikunjaApp(

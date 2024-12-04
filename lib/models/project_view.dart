@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'project_view.g.dart';
 
 enum ViewKind { LIST, GANTT, TABLE, KANBAN }
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class ProjectView {
   //"bucket_configuration": [],
   //"bucket_configuration_mode": 0,
@@ -30,28 +34,9 @@ class ProjectView {
   ProjectView(this.created, this.defaultBucketId, this.doneBucketId, this.id,
       this.position, this.projectId, this.title, this.updated, this.viewKind);
 
-  ProjectView.fromJson(Map<String, dynamic> json)
-      : created = DateTime.parse(json['created']),
-        defaultBucketId = json['default_bucket_id'],
-        doneBucketId = json['done_bucket_id'],
-        id = json['id'],
-        position = json['position'],
-        projectId = json['project_id'],
-        title = json['title'],
-        viewKind = json['view_kind'],
-        updated = DateTime.parse(json['updated']);
-
-  toJSON() => {
-        "created": created.toUtc().toIso8601String(),
-        "default_bucket_id": defaultBucketId,
-        "done_bucket_id": doneBucketId,
-        "id": id,
-        "position": position,
-        "project_id": projectId,
-        "title": title,
-        "updated": updated.toUtc().toIso8601String(),
-        "view_kind": viewKind
-      };
+  factory ProjectView.fromJson(Map<String, dynamic> json) =>
+      _$ProjectViewFromJson(json);
+  Map<String, dynamic> toJson() => _$ProjectViewToJson(this);
 
   ProjectView copyWith({
     DateTime? created, // "created": "string",

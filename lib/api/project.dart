@@ -12,7 +12,7 @@ class ProjectAPIService extends APIService implements ProjectService {
 
   @override
   Future<Project?> create(Project p) {
-    return client.put('/projects', body: p.toJSON()).then((response) {
+    return client.put('/projects', body: p.toJson()).then((response) {
       if (response == null) return null;
       return Project.fromJson(response.body);
     });
@@ -51,7 +51,7 @@ class ProjectAPIService extends APIService implements ProjectService {
 
   @override
   Future<Project?> update(Project p) {
-    return client.post('/projects/${p.id}', body: p.toJSON()).then((response) {
+    return client.post('/projects/${p.id}', body: p.toJson()).then((response) {
       if (response == null) return null;
       return Project.fromJson(response.body);
     });
@@ -74,12 +74,10 @@ class ProjectAPIService extends APIService implements ProjectService {
     _storage.write(key: "display_done_tasks_list_$listId", value: value);
   }
 
-  @override
   Future<String?> getDefaultList() {
     return _storage.read(key: "default_list_id");
   }
 
-  @override
   void setDefaultList(int? listId) {
     _storage.write(key: "default_list_id", value: listId.toString());
   }

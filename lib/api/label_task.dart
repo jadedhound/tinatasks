@@ -1,11 +1,10 @@
 import 'package:tinatasks/api/client.dart';
 import 'package:tinatasks/api/service.dart';
 import 'package:tinatasks/models/label.dart';
-import 'package:tinatasks/models/labelTask.dart';
 import 'package:tinatasks/service/services.dart';
 
 class LabelTaskAPIService extends APIService implements LabelTaskService {
-  LabelTaskAPIService(Client client) : super(client);
+  LabelTaskAPIService(TinaClient client) : super(client);
 
   @override
   Future<Label?> create(LabelTask lt) async {

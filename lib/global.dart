@@ -1,6 +1,5 @@
 import 'dart:developer' as dev;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -21,37 +20,39 @@ import 'package:workmanager/workmanager.dart';
 
 import 'api/project.dart';
 import 'api/view.dart';
-import 'main.dart';
 
-class VikunjaGlobal extends StatefulWidget {
+final globalSnackbarKey = GlobalKey<ScaffoldMessengerState>();
+final globalNavigatorKey = GlobalKey<NavigatorState>();
+
+class VikunjaGlobalWidget extends StatefulWidget {
   final Widget child;
   final Widget login;
 
-  VikunjaGlobal({required this.child, required this.login});
+  VikunjaGlobalWidget({required this.child, required this.login});
 
   @override
-  VikunjaGlobalState createState() => VikunjaGlobalState();
+  VikunjaGlobalWidgetState createState() => VikunjaGlobalWidgetState();
 
-  static VikunjaGlobalState of(BuildContext context) {
+  static VikunjaGlobalWidgetState of(BuildContext context) {
     var widget =
         context.dependOnInheritedWidgetOfExactType<VikunjaGlobalInherited>();
     return widget!.data;
   }
 }
 
-class VikunjaGlobalState extends State<VikunjaGlobal> {
-  final FlutterSecureStorage _storage = new FlutterSecureStorage();
+class VikunjaGlobalWidgetState extends State<VikunjaGlobalWidget> {
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   User? _currentUser;
   bool _loading = true;
   bool expired = false;
-  late Client _client;
+  late TinaClient _client;
   UserService? _newUserService;
   NotificationClass _notificationClass = NotificationClass();
 
   User? get currentUser => _currentUser;
 
-  Client get client => _client;
+  TinaClient get client => _client;
 
   GlobalKey<ScaffoldMessengerState> get snackbarKey => globalSnackbarKey;
 
@@ -88,9 +89,6 @@ class VikunjaGlobalState extends State<VikunjaGlobal> {
   late String currentTimeZone;
 
   void updateWorkmanagerDuration() {
-    if (kIsWeb) {
-      return;
-    }
     Workmanager().cancelAll().then((value) {
       settingsManager.getWorkmanagerDuration().then((duration) {
         if (duration.inMinutes > 0) {
@@ -117,7 +115,7 @@ class VikunjaGlobalState extends State<VikunjaGlobal> {
   @override
   void initState() {
     super.initState();
-    _client = Client(snackbarKey);
+    _client = TinaClient();
     settingsManager
         .getIgnoreCertificates()
         .then((value) => client.reloadIgnoreCerts(value == "1"));
@@ -136,6 +134,7 @@ class VikunjaGlobalState extends State<VikunjaGlobal> {
     setState(() {
       _loading = true;
     });
+
     if (token == null) {
       token = await _storage.read(key: newUser.id.toString());
     } else {
@@ -160,19 +159,13 @@ class VikunjaGlobalState extends State<VikunjaGlobal> {
   }
 
   void logoutUser(BuildContext context) async {
-//    _storage.deleteAll().then((_) {
-    var userId = await _storage.read(key: "currentUser");
+    final userId = await _storage.read(key: "currentUser");
     await _storage.delete(key: userId!); //delete token
     await _storage.delete(key: "${userId}_base");
     setState(() {
       client.reset();
       _currentUser = null;
     });
-    /*   }).catchError((err) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('An error occurred while logging out!'),
-      ));
-    });*/
   }
 
   void _loadCurrentUser() async {
@@ -242,7 +235,7 @@ class VikunjaGlobalState extends State<VikunjaGlobal> {
 }
 
 class VikunjaGlobalInherited extends InheritedWidget {
-  final VikunjaGlobalState data;
+  final VikunjaGlobalWidgetState data;
 
   VikunjaGlobalInherited({Key? key, required this.data, required Widget child})
       : super(key: key, child: child);

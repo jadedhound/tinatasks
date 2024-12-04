@@ -13,7 +13,7 @@ void callbackDispatcher() {
     print(
         "Native called background task: $task"); //simpleTask will be emitted here.
     if (task == "update-tasks" && inputData != null) {
-      Client client = Client(null,
+      TinaClient client = TinaClient(
           token: inputData["client_token"],
           base: inputData["client_base"],
           authenticated: true);
@@ -46,7 +46,7 @@ void callbackDispatcher() {
       if (token == null || base == null) {
         return Future.value(true);
       }
-      Client client = Client(null);
+      TinaClient client = TinaClient();
       client.configure(token: token, base: base, authenticated: true);
       // load new token from server to avoid expiration
       String? newToken = await UserAPIService(client).getToken();

@@ -42,6 +42,9 @@ jobs:
       - name: Download Packages
         run: flutter pub get
 
+      - name: Generate Code
+        run: dart run build_runner build
+
       - name: Generate Icons
         run: dart run flutter_launcher_icons
 

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:tinatasks/global.dart';
 import 'package:tinatasks/main.dart';
 
-void showSentryModal(BuildContext context, VikunjaGlobalState global) {
+void showSentryModal(BuildContext context, VikunjaGlobalWidgetState global) {
   global.settingsManager.getSentryModalShown().then((sentryModalShown) {
-    VikunjaGlobal.of(context).settingsManager.setSentryModalShown(true);
+    VikunjaGlobalWidget.of(context).settingsManager.setSentryModalShown(true);
     if (!sentryModalShown) {
       return showDialog<void>(
           context: context,
@@ -25,7 +25,7 @@ void showSentryModal(BuildContext context, VikunjaGlobalState global) {
                   TextButton(
                     child: Text('Yes'),
                     onPressed: () {
-                      VikunjaGlobal.of(context)
+                      VikunjaGlobalWidget.of(context)
                           .settingsManager
                           .setSentryEnabled(true)
                           .then((_) => themeModel.notify());
@@ -35,7 +35,7 @@ void showSentryModal(BuildContext context, VikunjaGlobalState global) {
                   TextButton(
                     child: Text('No'),
                     onPressed: () {
-                      VikunjaGlobal.of(context)
+                      VikunjaGlobalWidget.of(context)
                           .settingsManager
                           .setSentryEnabled(false)
                           .then((_) => themeModel.notify());

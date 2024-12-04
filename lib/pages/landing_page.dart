@@ -36,9 +36,12 @@ class LandingPageState extends State<LandingPage> {
   static const platform = const MethodChannel('vikunja');
 
   Future<void> _updateDefaultList() async {
-    return VikunjaGlobal.of(context).newUserService?.getCurrentUser().then(
+    return VikunjaGlobalWidget.of(context)
+        .newUserService
+        ?.getCurrentUser()
+        .then(
           (value) => setState(() {
-            defaultList = value?.settings?.default_project_id;
+            defaultList = value?.settings?.defaultProjectId;
           }),
         );
   }
@@ -117,7 +120,7 @@ class LandingPageState extends State<LandingPage> {
             children: [ListView(), Center(child: Text("This view is empty"))]);
         break;
       case PageStatus.success:
-        showSentryModal(context, VikunjaGlobal.of(context));
+        showSentryModal(context, VikunjaGlobalWidget.of(context));
         body = ListView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -146,7 +149,7 @@ class LandingPageState extends State<LandingPage> {
                       onTap: () {
                         Navigator.pop(context);
                         bool newval = !onlyDueDate;
-                        VikunjaGlobal.of(context)
+                        VikunjaGlobalWidget.of(context)
                             .settingsManager
                             .setLandingPageOnlyDueDateTasks(newval)
                             .then((value) {
@@ -190,7 +193,7 @@ class LandingPageState extends State<LandingPage> {
 
   Future<void> _addTask(
       String title, DateTime? dueDate, BuildContext context) async {
-    final globalState = VikunjaGlobal.of(context);
+    final globalState = VikunjaGlobalWidget.of(context);
     if (globalState.currentUser == null) {
       return;
     }
@@ -232,16 +235,16 @@ class LandingPageState extends State<LandingPage> {
     _tasks = [];
     landingPageStatus = PageStatus.loading;
     // FIXME: loads and reschedules tasks each time list is updated
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .notifications
-        .scheduleDueNotifications(VikunjaGlobal.of(context).taskService);
-    return VikunjaGlobal.of(context)
+        .scheduleDueNotifications(VikunjaGlobalWidget.of(context).taskService);
+    return VikunjaGlobalWidget.of(context)
         .settingsManager
         .getLandingPageOnlyDueDateTasks()
         .then((showOnlyDueDateTasks) {
-      VikunjaGlobalState global = VikunjaGlobal.of(context);
+      VikunjaGlobalWidgetState global = VikunjaGlobalWidget.of(context);
       Map<String, dynamic>? frontend_settings =
-          global.currentUser?.settings?.frontend_settings;
+          global.currentUser?.settings?.frontendSettings;
       int? filterId = 0;
       if (frontend_settings!["filter_id_used_on_overview"] != null)
         filterId = frontend_settings["filter_id_used_on_overview"];
@@ -251,7 +254,6 @@ class LandingPageState extends State<LandingPage> {
           "sort_by": ["due_date", "id"],
           "order_by": ["asc", "desc"],
         }).then<Future<void>?>((response) => _handleTaskList(response?.body));
-        ;
       }
       List<String> filterStrings = ["done = false"];
       if (showOnlyDueDateTasks) {

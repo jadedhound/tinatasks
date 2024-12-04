@@ -33,7 +33,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = VikunjaGlobal.of(context).currentUser;
+    final currentUser = VikunjaGlobalWidget.of(context).currentUser;
     if (_selectedDrawerIndex != _previousDrawerIndex || drawerItem == null)
       drawerItem = _getDrawerItemWidget(_selectedDrawerIndex);
 

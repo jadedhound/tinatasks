@@ -154,8 +154,8 @@ class TaskBottomSheetState extends State<TaskBottomSheet> {
                 children: [
                   Icon(Icons.percent),
                   Padding(padding: EdgeInsets.fromLTRB(10, 0, 0, 0)),
-                  Text(_currentTask.percent_done != null
-                      ? (_currentTask.percent_done! * 100).toInt().toString() +
+                  Text(_currentTask.percentDone != null
+                      ? (_currentTask.percentDone! * 100).toInt().toString() +
                           "%"
                       : "Unset"),
                 ],

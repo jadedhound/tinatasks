@@ -94,7 +94,7 @@ class ListProvider with ChangeNotifier {
       "page": [page.toString()]
     };
 
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .bucketService
         .getAllByList(listId, viewId, queryParams)
         .then((response) {
@@ -115,7 +115,7 @@ class ListProvider with ChangeNotifier {
       {required BuildContext context,
       required String title,
       required int listId}) async {
-    final globalState = VikunjaGlobal.of(context);
+    final globalState = VikunjaGlobalWidget.of(context);
     if (globalState.currentUser == null) {
       return;
     }
@@ -138,7 +138,7 @@ class ListProvider with ChangeNotifier {
       {required BuildContext context,
       required Task newTask,
       required int listId}) {
-    var globalState = VikunjaGlobal.of(context);
+    var globalState = VikunjaGlobalWidget.of(context);
     if (newTask.bucketId == null) pageStatus = PageStatus.loading;
     notifyListeners();
 
@@ -159,7 +159,10 @@ class ListProvider with ChangeNotifier {
 
   Future<Task?> updateTask(
       {required BuildContext context, required Task task}) {
-    return VikunjaGlobal.of(context).taskService.update(task).then((task) {
+    return VikunjaGlobalWidget.of(context)
+        .taskService
+        .update(task)
+        .then((task) {
       // FIXME: This is ugly. We should use a redux to not have to do these kind of things.
       //  This is enough for now (it works™) but we should definitely fix it later.
       if (task == null) return null;
@@ -184,7 +187,7 @@ class ListProvider with ChangeNotifier {
       required int listId,
       required int viewId}) {
     notifyListeners();
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .bucketService
         .add(listId, viewId, newBucket)
         .then((bucket) {
@@ -199,7 +202,7 @@ class ListProvider with ChangeNotifier {
       required Bucket bucket,
       required int listId,
       required int viewId}) {
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .bucketService
         .update(bucket, listId, viewId)
         .then((rBucket) {
@@ -215,7 +218,7 @@ class ListProvider with ChangeNotifier {
       required int listId,
       required int viewId,
       required int bucketId}) {
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .bucketService
         .delete(listId, viewId, bucketId)
         .then((_) {
@@ -245,17 +248,18 @@ class ListProvider with ChangeNotifier {
     else
       _buckets[newBucketIndex].tasks.insert(index, task);
 
-    task = await VikunjaGlobal.of(context).taskService.update(task.copyWith(
-          bucketId: newBucketId,
-          position: calculateItemPosition(
-            positionBefore: index != 0
-                ? _buckets[newBucketIndex].tasks[index - 1].position
-                : null,
-            positionAfter: index < _buckets[newBucketIndex].tasks.length - 1
-                ? _buckets[newBucketIndex].tasks[index + 1].position
-                : null,
-          ),
-        ));
+    task =
+        await VikunjaGlobalWidget.of(context).taskService.update(task.copyWith(
+              bucketId: newBucketId,
+              position: calculateItemPosition(
+                positionBefore: index != 0
+                    ? _buckets[newBucketIndex].tasks[index - 1].position
+                    : null,
+                positionAfter: index < _buckets[newBucketIndex].tasks.length - 1
+                    ? _buckets[newBucketIndex].tasks[index + 1].position
+                    : null,
+              ),
+            ));
     if (task == null) return;
     _buckets[newBucketIndex].tasks[index] = task;
 
@@ -264,7 +268,7 @@ class ListProvider with ChangeNotifier {
     if (index == 0 &&
         _buckets[newBucketIndex].tasks.length > 1 &&
         _buckets[newBucketIndex].tasks[1].position == 0) {
-      secondTask = await VikunjaGlobal.of(context)
+      secondTask = await VikunjaGlobalWidget.of(context)
           .taskService
           .update(_buckets[newBucketIndex].tasks[1].copyWith(
                 position: calculateItemPosition(

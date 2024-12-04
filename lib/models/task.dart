@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tinatasks/models/label.dart';
-import 'package:tinatasks/models/taskAttachment.dart';
+import 'package:tinatasks/models/task_attachment.dart';
 import 'package:tinatasks/models/user.dart';
 import 'package:tinatasks/utils/checkboxes_in_text.dart';
+import 'package:tinatasks/utils/json_converters.dart';
 
+part 'task.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class TaskReminder {
-  final int relative_period;
-  final String relative_to;
+  final int relativePeriod;
+  final String relativeTo;
   DateTime reminder;
 
   TaskReminder(this.reminder)
-      : relative_period = 0,
-        relative_to = "";
+      : relativePeriod = 0,
+        relativeTo = "";
 
-  TaskReminder.fromJson(Map<String, dynamic> json)
-      : reminder = DateTime.parse(json['reminder']),
-        relative_period = json['relative_period'],
-        relative_to = json['relative_to'];
-
-  toJSON() => {
-        'relative_period': relative_period,
-        'relative_to': relative_to,
-        'reminder': reminder.toUtc().toIso8601String(),
-      };
+  factory TaskReminder.fromJson(Map<String, dynamic> json) =>
+      _$TaskReminderFromJson(json);
+  Map<String, dynamic> toJson() => _$TaskReminderToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake)
 class Task {
   final int id;
   final int? parentTaskId, priority, bucketId;
@@ -38,9 +35,11 @@ class Task {
   final String identifier;
   final String title, description;
   final bool done;
+  @JsonColorConverter()
+  @JsonKey(name: 'hex_color')
   Color? color;
   final double? position;
-  final double? percent_done;
+  final double? percentDone;
   final User createdBy;
   Duration? repeatAfter;
   final List<Task> subtasks;
@@ -66,7 +65,7 @@ class Task {
     this.repeatAfter,
     this.color,
     this.position,
-    this.percent_done,
+    this.percentDone,
     this.subtasks = const [],
     this.labels = const [],
     this.attachments = const [],
@@ -92,80 +91,8 @@ class Task {
   bool get hasStartDate => startDate?.year != 1;
   bool get hasEndDate => endDate?.year != 1;
 
-  Task.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        title = json['title'],
-        description = json['description'],
-        identifier = json['identifier'],
-        done = json['done'],
-        reminderDates = json['reminders'] != null
-            ? (json['reminders'] as List<dynamic>)
-                .map((ts) => TaskReminder.fromJson(ts))
-                .toList()
-            : [],
-        dueDate = DateTime.parse(json['due_date']),
-        startDate = DateTime.parse(json['start_date']),
-        endDate = DateTime.parse(json['end_date']),
-        parentTaskId = json['parent_task_id'],
-        priority = json['priority'],
-        repeatAfter = Duration(seconds: json['repeat_after']),
-        color = json['hex_color'] != ''
-            ? Color(int.parse(json['hex_color'], radix: 16) + 0xFF000000)
-            : null,
-        position = json['position'] is int
-            ? json['position'].toDouble()
-            : json['position'],
-        percent_done = json['percent_done'] is int
-            ? json['percent_done'].toDouble()
-            : json['percent_done'],
-        labels = json['labels'] != null
-            ? (json['labels'] as List<dynamic>)
-                .map((label) => Label.fromJson(label))
-                .toList()
-            : [],
-        subtasks = json['subtasks'] != null
-            ? (json['subtasks'] as List<dynamic>)
-                .map((subtask) => Task.fromJson(subtask))
-                .toList()
-            : [],
-        attachments = json['attachments'] != null
-            ? (json['attachments'] as List<dynamic>)
-                .map((attachment) => TaskAttachment.fromJSON(attachment))
-                .toList()
-            : [],
-        updated = DateTime.parse(json['updated']),
-        created = DateTime.parse(json['created']),
-        //listId = json['list_id'],
-        projectId = json['project_id'],
-        bucketId = json['bucket_id'],
-        createdBy = User.fromJson(json['created_by']);
-
-  toJSON() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'identifier': identifier.isNotEmpty ? identifier : null,
-        'done': done,
-        'reminders': reminderDates.map((date) => date.toJSON()).toList(),
-        'due_date': dueDate?.toUtc().toIso8601String(),
-        'start_date': startDate?.toUtc().toIso8601String(),
-        'end_date': endDate?.toUtc().toIso8601String(),
-        'priority': priority,
-        'repeat_after': repeatAfter?.inSeconds,
-        'hex_color':
-            color?.value.toRadixString(16).padLeft(8, '0').substring(2),
-        'position': position,
-        'percent_done': percent_done,
-        'project_id': projectId,
-        'labels': labels.map((label) => label.toJSON()).toList(),
-        'subtasks': subtasks.map((subtask) => subtask.toJSON()).toList(),
-        'attachments':
-            attachments.map((attachment) => attachment.toJSON()).toList(),
-        'bucket_id': bucketId,
-        'created_by': createdBy.toJSON(),
-        'updated': updated.toUtc().toIso8601String(),
-        'created': created.toUtc().toIso8601String(),
-      };
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+  Map<String, dynamic> toJson() => _$TaskToJson(this);
 
   Task copyWith({
     int? id,
@@ -211,7 +138,7 @@ class Task {
       done: done ?? this.done,
       color: color ?? this.color,
       position: position ?? this.position,
-      percent_done: percent_done ?? this.percent_done,
+      percentDone: percent_done ?? this.percentDone,
       createdBy: createdBy ?? this.createdBy,
       repeatAfter: repeatAfter ?? this.repeatAfter,
       subtasks: subtasks ?? this.subtasks,

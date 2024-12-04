@@ -4,11 +4,11 @@ import 'package:tinatasks/models/label.dart';
 import 'package:tinatasks/service/services.dart';
 
 class LabelAPIService extends APIService implements LabelService {
-  LabelAPIService(Client client) : super(client);
+  LabelAPIService(TinaClient client) : super(client);
 
   @override
   Future<Label?> create(Label label) {
-    return client.put('/labels', body: label.toJSON()).then((response) {
+    return client.put('/labels', body: label.toJson()).then((response) {
       if (response == null) return null;
       return Label.fromJson(response.body);
     });

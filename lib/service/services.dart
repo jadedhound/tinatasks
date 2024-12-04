@@ -5,13 +5,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tinatasks/api/response.dart';
 import 'package:tinatasks/models/bucket.dart';
 import 'package:tinatasks/models/label.dart';
-import 'package:tinatasks/models/labelTask.dart';
 import 'package:tinatasks/models/task.dart';
 import 'package:tinatasks/models/user.dart';
 
 import '../models/project.dart';
+import '../models/project_view.dart';
 import '../models/server.dart';
-import '../models/view.dart';
 
 enum TaskServiceOptionSortBy {
   id,

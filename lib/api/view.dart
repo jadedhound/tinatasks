@@ -1,5 +1,5 @@
 import 'package:tinatasks/api/service.dart';
-import 'package:tinatasks/models/view.dart';
+import 'package:tinatasks/models/project_view.dart';
 import 'package:tinatasks/service/services.dart';
 
 class ProjectViewAPIService extends APIService implements ProjectViewService {
@@ -25,10 +25,10 @@ class ProjectViewAPIService extends APIService implements ProjectViewService {
 
   @override
   Future<ProjectView?> update(ProjectView view) {
-    print(view.toJSON());
+    print(view.toJson());
     return client
         .post('/projects/${view.projectId}/views/${view.id}',
-            body: view.toJSON())
+            body: view.toJson())
         .then((response) {
       if (response == null) return null;
       return ProjectView.fromJson(response.body);

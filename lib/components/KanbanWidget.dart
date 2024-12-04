@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../global.dart';
 import '../models/bucket.dart';
 import '../models/project.dart';
-import '../models/view.dart';
+import '../models/project_view.dart';
 import '../pages/project/project_task_list.dart';
 import '../stores/project_store.dart';
 import '../utils/calculate_item_position.dart';
@@ -177,14 +177,14 @@ class KanbanClass {
 
   Future<void> _setDoneBucket(BuildContext context, int bucketId) async {
     //setState(() {});
-    _view = (await VikunjaGlobal.of(context)
+    _view = (await VikunjaGlobalWidget.of(context)
         .projectViewService
         .update(_view.copyWith(doneBucketId: bucketId)))!;
     notify();
   }
 
   Future<void> _addBucket(String title, BuildContext context) async {
-    final currentUser = VikunjaGlobal.of(context).currentUser;
+    final currentUser = VikunjaGlobalWidget.of(context).currentUser;
     if (currentUser == null) {
       return;
     }

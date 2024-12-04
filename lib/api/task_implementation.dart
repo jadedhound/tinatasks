@@ -7,12 +7,12 @@ import 'package:tinatasks/models/task.dart';
 import 'package:tinatasks/service/services.dart';
 
 class TaskAPIService extends APIService implements TaskService {
-  TaskAPIService(Client client) : super(client);
+  TaskAPIService(TinaClient client) : super(client);
 
   @override
   Future<Task?> add(int projectId, Task task) {
     return client
-        .put('/projects/$projectId/tasks', body: task.toJSON())
+        .put('/projects/$projectId/tasks', body: task.toJson())
         .then((response) {
       if (response == null) return null;
       return Task.fromJson(response.body);
@@ -35,7 +35,7 @@ class TaskAPIService extends APIService implements TaskService {
   @override
   Future<Task?> update(Task task) {
     return client
-        .post('/tasks/${task.id}', body: task.toJSON())
+        .post('/tasks/${task.id}', body: task.toJson())
         .then((response) {
       if (response == null) return null;
       return Task.fromJson(response.body);

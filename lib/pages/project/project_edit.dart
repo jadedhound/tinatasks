@@ -33,7 +33,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
   @override
   Widget build(BuildContext ctx) {
     if (displayDoneTasks == null)
-      VikunjaGlobal.of(context)
+      VikunjaGlobalWidget.of(context)
           .projectService
           .getDisplayDoneTasks(listId)
           .then((value) => setState(() => displayDoneTasks = value == "1"));
@@ -98,7 +98,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
                       title: Text("Show done tasks"),
                       onChanged: (value) {
                         value ??= false;
-                        VikunjaGlobal.of(context)
+                        VikunjaGlobalWidget.of(context)
                             .projectService
                             .setDisplayDoneTasks(listId, value ? "1" : "0");
                         setState(() => displayDoneTasks = value);
@@ -155,7 +155,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
     //  aka updating the existing list we got from context (setters?)
     Project newProject =
         widget.project.copyWith(title: _title, description: _description);
-    VikunjaGlobal.of(context).projectService.update(newProject).then((_) {
+    VikunjaGlobalWidget.of(context).projectService.update(newProject).then((_) {
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('The project was updated successfully!'),

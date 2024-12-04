@@ -6,7 +6,7 @@ import 'package:tinatasks/models/user.dart';
 import 'package:tinatasks/service/services.dart';
 
 class UserAPIService extends APIService implements UserService {
-  UserAPIService(Client client) : super(client);
+  UserAPIService(TinaClient client) : super(client);
 
   @override
   Future<UserTokenPair> login(String username, password,

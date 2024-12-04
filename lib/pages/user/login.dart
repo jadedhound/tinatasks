@@ -38,36 +38,36 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      if (VikunjaGlobal.of(context).expired) {
+      if (VikunjaGlobalWidget.of(context).expired) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Login has expired. Please reenter your details!")));
         setState(() {
-          _serverController.text = VikunjaGlobal.of(context).client.base;
+          _serverController.text = VikunjaGlobalWidget.of(context).client.base;
           _usernameController.text =
-              VikunjaGlobal.of(context).currentUser?.username ?? "";
+              VikunjaGlobalWidget.of(context).currentUser?.username ?? "";
         });
       }
-      final client = VikunjaGlobal.of(context).client;
-      await VikunjaGlobal.of(context)
+      final client = VikunjaGlobalWidget.of(context).client;
+      await VikunjaGlobalWidget.of(context)
           .settingsManager
           .getIgnoreCertificates()
           .then((value) =>
               setState(() => client.ignoreCertificates = value == "1"));
 
-      await VikunjaGlobal.of(context)
+      await VikunjaGlobalWidget.of(context)
           .settingsManager
           .getPastServers()
           .then((value) {
         print(value);
         if (value != null) setState(() => pastServers = value);
       });
-      showSentryModal(context, VikunjaGlobal.of(context));
+      showSentryModal(context, VikunjaGlobalWidget.of(context));
     });
   }
 
   @override
   Widget build(BuildContext ctx) {
-    Client client = VikunjaGlobal.of(context).client;
+    TinaClient client = VikunjaGlobalWidget.of(context).client;
 
     return Scaffold(
       body: Center(
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 pastServers.remove(
                                                     itemData.toString());
                                                 //_serverSuggestionController.suggestionsBox?.close();
-                                                VikunjaGlobal.of(context)
+                                                VikunjaGlobalWidget.of(context)
                                                     .settingsManager
                                                     .setPastServers(
                                                         pastServers);
@@ -250,11 +250,12 @@ class _LoginPageState extends State<LoginPage> {
                       onChanged: (value) {
                         setState(
                             () => client.reloadIgnoreCerts(value ?? false));
-                        VikunjaGlobal.of(context)
+                        VikunjaGlobalWidget.of(context)
                             .settingsManager
                             .setIgnoreCertificates(value ?? false);
-                        VikunjaGlobal.of(context).client.ignoreCertificates =
-                            value ?? false;
+                        VikunjaGlobalWidget.of(context)
+                            .client
+                            .ignoreCertificates = value ?? false;
                       }),
                 ],
               ),
@@ -272,11 +273,13 @@ class _LoginPageState extends State<LoginPage> {
     if (_server.isEmpty) return;
 
     if (!pastServers.contains(_server)) pastServers.add(_server);
-    await VikunjaGlobal.of(context).settingsManager.setPastServers(pastServers);
+    await VikunjaGlobalWidget.of(context)
+        .settingsManager
+        .setPastServers(pastServers);
 
     setState(() => _loading = true);
     try {
-      var vGlobal = VikunjaGlobal.of(context);
+      var vGlobal = VikunjaGlobalWidget.of(context);
       vGlobal.client.showSnackBar = false;
       vGlobal.client.configure(base: _server);
       Server? info = await vGlobal.serverService.getInfo();
@@ -341,7 +344,7 @@ class _LoginPageState extends State<LoginPage> {
               ));
      */
     } finally {
-      VikunjaGlobal.of(context).client.showSnackBar = true;
+      VikunjaGlobalWidget.of(context).client.showSnackBar = true;
       setState(() {
         _loading = false;
       });

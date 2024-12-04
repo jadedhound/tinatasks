@@ -29,7 +29,7 @@ class _ProjectOverviewPageState extends State<ProjectOverviewPage>
   @override
   void afterFirstLayout(BuildContext context) {
     _loadProjects();
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .settingsManager
         .getExpandedProjects()
         .then((val) => setState(() {
@@ -39,7 +39,9 @@ class _ProjectOverviewPageState extends State<ProjectOverviewPage>
   }
 
   void updateExpandedList() {
-    VikunjaGlobal.of(context).settingsManager.setExpandedProjects(expandedList);
+    VikunjaGlobalWidget.of(context)
+        .settingsManager
+        .setExpandedProjects(expandedList);
   }
 
   void addToExpandedList(int id) {
@@ -153,7 +155,10 @@ class _ProjectOverviewPageState extends State<ProjectOverviewPage>
   }
 
   Future<void> _loadProjects() {
-    return VikunjaGlobal.of(context).projectService.getAll().then((result) {
+    return VikunjaGlobalWidget.of(context)
+        .projectService
+        .getAll()
+        .then((result) {
       setState(() {
         _loading = false;
         if (result != null) _projects = result;
@@ -172,12 +177,12 @@ class _ProjectOverviewPageState extends State<ProjectOverviewPage>
   }
 
   _addProject(String name, BuildContext context) {
-    final currentUser = VikunjaGlobal.of(context).currentUser;
+    final currentUser = VikunjaGlobalWidget.of(context).currentUser;
     if (currentUser == null) {
       return;
     }
 
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .projectService
         .create(Project(title: name, owner: currentUser))
         .then((_) {

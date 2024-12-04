@@ -1,8 +1,13 @@
 import 'dart:ui';
 
+import 'package:json_annotation/json_annotation.dart';
+import 'package:tinatasks/models/project_view.dart';
 import 'package:tinatasks/models/user.dart';
-import 'package:tinatasks/models/view.dart';
+import 'package:tinatasks/utils/json_converters.dart';
 
+part 'project.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class Project {
   final int id;
   final double position;
@@ -11,11 +16,11 @@ class Project {
   final String description;
   final String title;
   final DateTime created, updated;
+  @JsonColorConverter()
   final Color? color;
   final bool isArchived, isFavourite;
-
-  Iterable<Project>? subprojects;
   final List<ProjectView> views;
+  Iterable<Project>? subprojects;
 
   Project(
       {this.id = 0,
@@ -33,38 +38,9 @@ class Project {
       : this.created = created ?? DateTime.now(),
         this.updated = updated ?? DateTime.now();
 
-  Project.fromJson(Map<String, dynamic> json)
-      : title = json['title'],
-        description = json['description'],
-        id = json['id'],
-        position = json['position'].toDouble(),
-        isArchived = json['is_archived'],
-        isFavourite = json['is_archived'],
-        parentProjectId = json['parent_project_id'],
-        views = json['views']
-            .map<ProjectView>((view) => ProjectView.fromJson(view))
-            .toList(),
-        created = DateTime.parse(json['created']),
-        updated = DateTime.parse(json['updated']),
-        color = json['hex_color'] != ''
-            ? Color(int.parse(json['hex_color'], radix: 16) + 0xFF000000)
-            : null,
-        owner = json['owner'] != null ? User.fromJson(json['owner']) : null;
-
-  Map<String, dynamic> toJSON() => {
-        'id': id,
-        'created': created.toUtc().toIso8601String(),
-        'updated': updated.toUtc().toIso8601String(),
-        'title': title,
-        'owner': owner?.toJSON(),
-        'description': description,
-        'parent_project_id': parentProjectId,
-        'hex_color':
-            color?.value.toRadixString(16).padLeft(8, '0').substring(2),
-        'is_archived': isArchived,
-        'is_favourite': isFavourite,
-        'position': position
-      };
+  factory Project.fromJson(Map<String, dynamic> json) =>
+      _$ProjectFromJson(json);
+  Map<String, dynamic> toJson() => _$ProjectToJson(this);
 
   Project copyWith({
     int? id,

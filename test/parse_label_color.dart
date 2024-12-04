@@ -21,7 +21,7 @@ void main() {
         title: '',
         color: Color(0xFFe8e8e8),
         createdBy: User(id: 0, username: ''));
-    var json = label.toJSON();
+    var json = label.toJson();
 
     expect(json.toString(),
         '{id: 1, title: , description: null, hex_color: e8e8e8, created_by: {id: 0, username: ,}, updated: null, created: null}');

@@ -2,10 +2,10 @@ import 'package:meta/meta.dart';
 import 'package:tinatasks/api/client.dart';
 
 class APIService {
-  final Client _client;
+  final TinaClient _client;
 
   @protected
-  Client get client => _client;
+  TinaClient get client => _client;
 
   APIService(this._client);
 

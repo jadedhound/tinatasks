@@ -1,13 +1,20 @@
 import 'dart:ui';
 
+import 'package:json_annotation/json_annotation.dart';
+import 'package:tinatasks/models/task.dart';
 import 'package:tinatasks/models/user.dart';
 import 'package:tinatasks/theme/constants.dart';
+import 'package:tinatasks/utils/json_converters.dart';
 
+part 'label.g.dart';
+
+@JsonSerializable(fieldRename: FieldRename.snake)
 class Label {
   final int id;
   final String title, description;
   final DateTime created, updated;
   final User createdBy;
+  @JsonColorConverter()
   final Color? color;
 
   late final Color textColor = color != null && color!.computeLuminance() <= 0.5
@@ -25,25 +32,34 @@ class Label {
   })  : this.created = created ?? DateTime.now(),
         this.updated = updated ?? DateTime.now();
 
-  Label.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        title = json['title'],
-        description = json['description'],
-        color = json['hex_color'] == ''
-            ? null
-            : new Color(int.parse(json['hex_color'], radix: 16) + 0xFF000000),
-        updated = DateTime.parse(json['updated']),
-        created = DateTime.parse(json['created']),
-        createdBy = User.fromJson(json['created_by']);
+  factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
+  Map<String, dynamic> toJson() => _$LabelToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class LabelTaskBulk {
+  final List<Label> labels;
+
+  LabelTaskBulk({required this.labels});
+
+  factory LabelTaskBulk.fromJson(Map<String, dynamic> json) =>
+      _$LabelTaskBulkFromJson(json);
+  Map<String, dynamic> toJson() => _$LabelTaskBulkToJson(this);
+}
+
+//TODO: Remove this redundant class.
+class LabelTask {
+  final Label label;
+  final Task? task;
+
+  LabelTask({required this.label, required this.task});
+
+  LabelTask.fromJson(Map<String, dynamic> json, User createdBy)
+      : label =
+            new Label(id: json['label_id'], title: '', createdBy: createdBy),
+        task = null;
 
   toJSON() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'hex_color':
-            color?.value.toRadixString(16).padLeft(8, '0').substring(2),
-        'created_by': createdBy.toJSON(),
-        'updated': updated.toUtc().toIso8601String(),
-        'created': created.toUtc().toIso8601String(),
+        'label_id': label.id,
       };
 }

@@ -5,16 +5,16 @@ import 'package:tinatasks/models/bucket.dart';
 import 'package:tinatasks/service/services.dart';
 
 class BucketAPIService extends APIService implements BucketService {
-  BucketAPIService(Client client) : super(client);
+  BucketAPIService(TinaClient client) : super(client);
 
   @override
   Future<Bucket?> add(int projectId, int viewId, Bucket bucket) {
     return client
         .put('/projects/$projectId/views/$viewId/buckets',
-            body: bucket.toJSON())
+            body: bucket.toJson())
         .then((response) {
       if (response == null) return null;
-      return Bucket.fromJSON(response.body);
+      return Bucket.fromJson(response.body);
     });
   }
 
@@ -40,7 +40,7 @@ class BucketAPIService extends APIService implements BucketService {
         .get('/projects/$projectId/views/$viewId/tasks', queryParameters)
         .then((response) => response != null
             ? new Response(
-                convertList(response.body, (result) => Bucket.fromJSON(result)),
+                convertList(response.body, (result) => Bucket.fromJson(result)),
                 response.statusCode,
                 response.headers)
             : null);
@@ -54,10 +54,10 @@ class BucketAPIService extends APIService implements BucketService {
   Future<Bucket?> update(Bucket bucket, int projectId, int viewId) {
     return client
         .post('/projects/$projectId/views/$viewId/buckets/${bucket.id}',
-            body: bucket.toJSON())
+            body: bucket.toJson())
         .then((response) {
       if (response == null) return null;
-      return Bucket.fromJSON(response.body);
+      return Bucket.fromJson(response.body);
     });
   }
 }

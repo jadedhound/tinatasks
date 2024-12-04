@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tinatasks/theme/constants.dart';
 
 class FancyButton extends StatelessWidget {
   final double width;
@@ -24,29 +23,5 @@ class FancyButton extends StatelessWidget {
         child: Center(child: child),
       ),
     );
-    return Padding(
-        padding: vStandardVerticalPadding,
-        child: Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? vButtonShadowDark
-                  : vButtonShadow,
-              offset: Offset(-5, 5),
-              blurRadius: 10,
-            ),
-          ]),
-          child: Material(
-            borderRadius: BorderRadius.circular(3),
-            color: Theme.of(context).colorScheme.primary,
-            child: InkWell(
-                onTap: onPressed,
-                child: Center(
-                  child: child,
-                )),
-          ),
-        ));
   }
 }

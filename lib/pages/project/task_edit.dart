@@ -476,7 +476,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                             icon: Icon(Icons.download),
                             onPressed: () async {
                               String url =
-                                  VikunjaGlobal.of(context).client.base;
+                                  VikunjaGlobalWidget.of(context).client.base;
                               url +=
                                   '/tasks/${widget.task.id}/attachments/${widget.task.attachments[index].id}';
                               print(url);
@@ -484,7 +484,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
                                 url: url,
                                 fileName:
                                     widget.task.attachments[index].file.name,
-                                headers: VikunjaGlobal.of(context)
+                                headers: VikunjaGlobalWidget.of(context)
                                     .client
                                     .headers, // optional: header send with url (auth token etc)
                                 savedDir: '/storage/emulated/0/Download/',
@@ -542,7 +542,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
       ..repeatAfter = _repeatAfter;
 
     // update the labels
-    await VikunjaGlobal.of(context)
+    await VikunjaGlobalWidget.of(context)
         .labelTaskBulkService
         .update(updatedTask, _labels)
         .catchError((err) {
@@ -588,12 +588,12 @@ class _TaskEditPageState extends State<TaskEditPage> {
   }
 
   _delete(int taskId) {
-    VikunjaGlobal.of(context).taskService.delete(taskId);
+    VikunjaGlobalWidget.of(context).taskService.delete(taskId);
     Navigator.pop(context);
   }
 
   _searchLabel(String query) {
-    return VikunjaGlobal.of(context)
+    return VikunjaGlobalWidget.of(context)
         .labelService
         .getAll(query: query)
         .then((labels) {
@@ -628,7 +628,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
       return;
     }
 
-    final currentUser = VikunjaGlobal.of(context).currentUser;
+    final currentUser = VikunjaGlobalWidget.of(context).currentUser;
     if (currentUser == null) {
       return;
     }
@@ -637,7 +637,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
       title: labelTitle,
       createdBy: currentUser,
     );
-    VikunjaGlobal.of(context)
+    VikunjaGlobalWidget.of(context)
         .labelService
         .create(newLabel)
         .then((createdLabel) {
