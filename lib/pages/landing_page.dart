@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:tinatasks/global.dart';
 
 import '../components/AddDialog.dart';
-import '../components/SentryModal.dart';
 import '../components/TaskTile.dart';
 import '../components/pagestatus.dart';
 import '../models/task.dart';
@@ -120,7 +119,6 @@ class LandingPageState extends State<LandingPage> {
             children: [ListView(), Center(child: Text("This view is empty"))]);
         break;
       case PageStatus.success:
-        showSentryModal(context, VikunjaGlobalWidget.of(context));
         body = ListView(
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.symmetric(vertical: 8.0),

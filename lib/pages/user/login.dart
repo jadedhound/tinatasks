@@ -4,17 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:tinatasks/api/client.dart';
+import 'package:provider/provider.dart';
 import 'package:tinatasks/global.dart';
+import 'package:tinatasks/models/server.dart';
 import 'package:tinatasks/models/user.dart';
 import 'package:tinatasks/pages/user/register.dart';
 import 'package:tinatasks/theme/button.dart';
 import 'package:tinatasks/theme/buttonText.dart';
 import 'package:tinatasks/theme/constants.dart';
 import 'package:tinatasks/utils/validator.dart';
-
-import '../../components/SentryModal.dart';
-import '../../models/server.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -61,14 +59,11 @@ class _LoginPageState extends State<LoginPage> {
         print(value);
         if (value != null) setState(() => pastServers = value);
       });
-      showSentryModal(context, VikunjaGlobalWidget.of(context));
     });
   }
 
   @override
-  Widget build(BuildContext ctx) {
-    TinaClient client = VikunjaGlobalWidget.of(context).client;
-
+  Widget build(BuildContext cx) {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -244,19 +239,23 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => RegisterPage())),
                             child: VikunjaButtonText('Register'),
                           )),
-                  CheckboxListTile(
-                      title: Text("Ignore Certificates"),
-                      value: client.ignoreCertificates,
-                      onChanged: (value) {
-                        setState(
-                            () => client.reloadIgnoreCerts(value ?? false));
-                        VikunjaGlobalWidget.of(context)
-                            .settingsManager
-                            .setIgnoreCertificates(value ?? false);
-                        VikunjaGlobalWidget.of(context)
-                            .client
-                            .ignoreCertificates = value ?? false;
-                      }),
+                  Selector<GlobalState, bool>(
+                    selector: (_, state) => state.client.ignoreCertificates,
+                    builder: (_, ignoreCerts, __) => CheckboxListTile(
+                        title: Text("Ignore Certificates"),
+                        value: ignoreCerts,
+                        onChanged: (value) {
+                          setState(() => VikunjaGlobalWidget.of(context)
+                              .client
+                              .reloadIgnoreCerts(value ?? false));
+                          VikunjaGlobalWidget.of(context)
+                              .settingsManager
+                              .setIgnoreCertificates(value ?? false);
+                          VikunjaGlobalWidget.of(context)
+                              .client
+                              .ignoreCertificates = value ?? false;
+                        }),
+                  ),
                 ],
               ),
             ),

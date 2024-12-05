@@ -1,7 +1,9 @@
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:tinatasks/global.dart';
 import 'package:tinatasks/pages/home.dart';
@@ -13,24 +15,31 @@ import 'package:tinatasks/theme/theme.dart';
 import 'package:workmanager/workmanager.dart';
 
 void main() async {
+  if (kDebugMode) {
+    Logger.root.level = Level.ALL; // defaults to Level.INFO
+    Logger.root.onRecord.listen((record) {
+      final time = "${record.time.hour}:${record.time.second}";
+      print(
+          '${record.level.name} (${record.loggerName} | $time): ${record.message}');
+    });
+  }
   // Required to start background services before the app is run by runApp.
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
 
   runApp(
-    VikunjaGlobalWidget(
-      child: ChangeNotifierProvider<ProjectProvider>(
-        create: (_) => ProjectProvider(),
-        child: VikunjaApp(
-          home: HomePage(),
-          key: UniqueKey(),
-          navKey: globalNavigatorKey,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProjectProvider()),
+        ChangeNotifierProvider(create: (_) => GlobalState())
+      ],
+      child: VikunjaGlobalWidget(
+        child: Consumer<GlobalState>(
+          builder: (_, state, __) => state.client.authenticated
+              ? VikunjaApp(page: HomePage(), navKey: globalNavigatorKey)
+              : VikunjaApp(page: LoginPage()),
         ),
-      ),
-      login: VikunjaApp(
-        home: LoginPage(),
-        key: UniqueKey(),
       ),
     ),
   );
@@ -39,10 +48,10 @@ void main() async {
 ThemeModel themeModel = ThemeModel();
 
 class VikunjaApp extends StatelessWidget {
-  final Widget home;
+  final Widget page;
   final GlobalKey<NavigatorState>? navKey;
 
-  VikunjaApp({Key? key, required this.home, this.navKey}) : super(key: key);
+  VikunjaApp({required this.page, this.navKey}) : super(key: UniqueKey());
 
   Future<void> getLaunchData() async {
     try {
@@ -84,7 +93,7 @@ class VikunjaApp extends StatelessWidget {
       theme: themeData,
       scaffoldMessengerKey: globalSnackbarKey,
       navigatorKey: navKey,
-      home: this.home,
+      home: this.page,
     );
   }
 }

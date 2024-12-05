@@ -2,33 +2,38 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fpdart/fpdart.dart' hide State;
+import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:tinatasks/api/bucket_implementation.dart';
 import 'package:tinatasks/api/client.dart';
 import 'package:tinatasks/api/label_task.dart';
 import 'package:tinatasks/api/label_task_bulk.dart';
 import 'package:tinatasks/api/labels.dart';
+import 'package:tinatasks/api/project.dart';
 import 'package:tinatasks/api/server_implementation.dart';
 import 'package:tinatasks/api/task_implementation.dart';
 import 'package:tinatasks/api/user_implementation.dart';
 import 'package:tinatasks/api/version_check.dart';
+import 'package:tinatasks/api/view.dart';
 import 'package:tinatasks/managers/notifications.dart';
-import 'package:tinatasks/managers/user.dart';
 import 'package:tinatasks/models/user.dart';
 import 'package:tinatasks/service/services.dart';
 import 'package:workmanager/workmanager.dart';
 
-import 'api/project.dart';
-import 'api/view.dart';
-
 final globalSnackbarKey = GlobalKey<ScaffoldMessengerState>();
 final globalNavigatorKey = GlobalKey<NavigatorState>();
 
+class GlobalState extends ChangeNotifier {
+  Option<User> user = None();
+  TinaClient client = TinaClient();
+  final storage = FlutterSecureStorage();
+}
+
 class VikunjaGlobalWidget extends StatefulWidget {
   final Widget child;
-  final Widget login;
 
-  VikunjaGlobalWidget({required this.child, required this.login});
+  VikunjaGlobalWidget({required this.child});
 
   @override
   VikunjaGlobalWidgetState createState() => VikunjaGlobalWidgetState();
@@ -55,8 +60,6 @@ class VikunjaGlobalWidgetState extends State<VikunjaGlobalWidget> {
   TinaClient get client => _client;
 
   GlobalKey<ScaffoldMessengerState> get snackbarKey => globalSnackbarKey;
-
-  UserManager get userManager => new UserManager(_storage);
 
   UserService? get newUserService => _newUserService;
 
@@ -220,16 +223,14 @@ class VikunjaGlobalWidgetState extends State<VikunjaGlobalWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return new Center(child: new CircularProgressIndicator());
-    }
-    if (client.authenticated) {
-      notifications.scheduleDueNotifications(taskService);
-    }
-    return new VikunjaGlobalInherited(
-      data: this,
-      key: UniqueKey(),
-      child: !client.authenticated ? widget.login : widget.child,
+    return Selector<GlobalState, bool>(
+      selector: (_, state) => state.client.authenticated,
+      builder: (_, auth, __) {
+        if (auth) {
+          notifications.scheduleDueNotifications(taskService);
+        }
+        return VikunjaGlobalInherited(data: this, child: widget.child);
+      },
     );
   }
 }
@@ -238,7 +239,7 @@ class VikunjaGlobalInherited extends InheritedWidget {
   final VikunjaGlobalWidgetState data;
 
   VikunjaGlobalInherited({Key? key, required this.data, required Widget child})
-      : super(key: key, child: child);
+      : super(key: UniqueKey(), child: child);
 
   @override
   bool updateShouldNotify(VikunjaGlobalInherited oldWidget) {

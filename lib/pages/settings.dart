@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart' hide State;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tinatasks/global.dart';
 
@@ -247,7 +248,10 @@ class SettingsPageState extends State<SettingsPage> {
               onPressed: () => VikunjaGlobalWidget.of(context)
                   .versionChecker
                   .getLatestVersionTag()
-                  .then((value) => setState(() => newestVersionTag = value)),
+                  .run()
+                  //TODO: Remove this fallback into something meaningful.
+                  .then((value) => setState(() =>
+                      newestVersionTag = value.getOrElse(() => "v0.0.0"))),
               child: Text("Check for latest version")),
           Text("Current version: ${versionTag ?? "loading"}"),
           Text(newestVersionTag != null

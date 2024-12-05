@@ -5,8 +5,10 @@ import 'dart:io';
 import 'package:cronet_http/cronet_http.dart' as cronet_http;
 import 'package:cupertino_http/cupertino_http.dart' as cupertino_http;
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io_client;
+import 'package:logging/logging.dart';
 import 'package:tinatasks/api/response.dart';
 import 'package:tinatasks/components/string_extension.dart';
 import 'package:tinatasks/global.dart';
@@ -33,6 +35,7 @@ class TinaClient {
   bool authenticated = false;
   bool ignoreCertificates = false;
   bool showSnackBar = true;
+  final log = Logger('TinaClient');
 
   String get base => _base;
   String get token => _token;
@@ -79,10 +82,13 @@ class TinaClient {
 
   void reloadIgnoreCerts(bool? val) {
     ignoreCertificates = val ?? false;
-    HttpOverrides.global = new IgnoreCertHttpOverrides(ignoreCertificates);
-    VikunjaGlobalWidget.of(globalSnackbarKey.currentContext!)
-        .settingsManager
-        .setIgnoreCertificates(ignoreCertificates);
+    HttpOverrides.global = IgnoreCertHttpOverrides(ignoreCertificates);
+    Option.fromNullable(globalSnackbarKey.currentContext).match(
+      () => log.warning("snackbar context not found"),
+      (cx) => VikunjaGlobalWidget.of(cx)
+          .settingsManager
+          .setIgnoreCertificates(ignoreCertificates),
+    );
   }
 
   get _headers => {
